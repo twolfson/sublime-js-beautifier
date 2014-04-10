@@ -13,5 +13,8 @@ class JsBeautifierCommand(sublime_plugin.TextCommand):
         # https://github.com/einars/js-beautify/blob/v1.4.2/index.html#L245-L269
 
         # Invoke `js-beautifier` CLI
-        output = subprocess.check_output('js-beautify --file -', stdin=content)
-        print output
+        child = subprocess.Popen(['js-beautify', '--file', '-'], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        child.communicate(input=content)
+        # child.terminate()
+        # child.wait()
+        print child.stdout
