@@ -1,0 +1,6 @@
+[
+    {
+        "caption": "Beautify JS/CSS/HTML",
+        "command": "js_beautifier"
+    }
+]
