@@ -8,8 +8,10 @@ class JsBeautifierCommand(sublime_plugin.TextCommand):
         # Load the contents of the view
         view = self.view
         content = view.substr(sublime.Region(0, view.size()))
-        print content
 
         # TODO: Deteremine if the view is JS, CSS, or HTML
+        # https://github.com/einars/js-beautify/blob/v1.4.2/index.html#L245-L269
 
         # Invoke `js-beautifier` CLI
+        output = subprocess.check_output('js-beautify --file -', stdin=content)
+        print output
