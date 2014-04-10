@@ -34,10 +34,10 @@ class JsBeautifierCommand(sublime_plugin.TextCommand):
         child = subprocess.Popen(['js-beautify', '--type', content_type, '--file', '-'], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
         # TODO: Figure out better solution to encoding since Linux !== Windows
         # http://stackoverflow.com/questions/3810302/python-unicode-popen-or-popen-error-reading-unicode
-        child.stdin.write(content.encode('cp437'))
+        child.stdin.write(content)
         child.stdin.close()
-        child.wait()
         beautified_content = child.stdout.read()
+        child.kill()
 
         # Overwrite the current content
         view.replace(edit, all_text, beautified_content)
