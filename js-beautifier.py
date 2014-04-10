@@ -1,8 +1,22 @@
+import re
 import subprocess
 import sublime_plugin
 import sublime
 
 class JsBeautifierCommand(sublime_plugin.TextCommand):
+    @classmethod
+    def looks_likes_html(source):
+        """Determine if a code block looks like HTML
+
+        https://github.com/einars/js-beautify/blob/v1.4.2/index.html#L262-L269
+            <foo> - looks like html
+            <!--\nalert('foo!');\n--> - doesn't look like html
+        """
+        # In JS, we only replace the first item (not a global regexp)
+        trimmed = re.sub(r'^[ \t\n\r]+', '', source, count=1)
+        comment_mark = '<' + '!-' + '-'
+        return (trimmed and (trimmed.substr(0, 1) == '<' and trimmed.substr(0, 4) != comment_mark))
+
     def run(self, edit):
         """Run JS Beautifer CLI scripts against current view"""
         # Load the contents of the view
@@ -10,11 +24,14 @@ class JsBeautifierCommand(sublime_plugin.TextCommand):
         all_text = sublime.Region(0, view.size())
         content = view.substr(all_text)
 
-        # TODO: Deteremine if the view is JS, CSS, or HTML
+        # Deteremine if the view is JS, CSS, or HTML
+        # TODO: Leverage syntax
+        # Otherwise, use sniffing from JS Beautifier source
         # https://github.com/einars/js-beautify/blob/v1.4.2/index.html#L245-L269
+        content_type = 'html' if self.looks_likes_html(content) else 'js'
 
         # Invoke `js-beautifier` CLI
-        child = subprocess.Popen(['js-beautify', '--file', '-'], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        child = subprocess.Popen(['js-beautify', '--type', content_type, '--file', '-'], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
         child.stdin.write(content)
         child.stdin.close()
         child.wait()
