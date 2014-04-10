@@ -5,7 +5,7 @@ import sublime
 
 class JsBeautifierCommand(sublime_plugin.TextCommand):
     @classmethod
-    def looks_likes_html(source):
+    def looks_likes_html(cls, source):
         """Determine if a code block looks like HTML
 
         https://github.com/einars/js-beautify/blob/v1.4.2/index.html#L262-L269
@@ -15,7 +15,7 @@ class JsBeautifierCommand(sublime_plugin.TextCommand):
         # In JS, we only replace the first item (not a global regexp)
         trimmed = re.sub(r'^[ \t\n\r]+', '', source, count=1)
         comment_mark = '<' + '!-' + '-'
-        return (trimmed and (trimmed.substr(0, 1) == '<' and trimmed.substr(0, 4) != comment_mark))
+        return (trimmed and (trimmed[:1] == '<' and trimmed[:4] != comment_mark))
 
     def run(self, edit):
         """Run JS Beautifer CLI scripts against current view"""
